@@ -26,7 +26,6 @@ const useCountryStore = create<CountryState>((set) => ({
   addCountry: async (data) => {
     try {
       const res = await api.post("/country", data);
-      console.log(res);
       set((state) => ({ countries: [...state.countries, res.data.data] }));
     } catch (err) {
       console.error(err);

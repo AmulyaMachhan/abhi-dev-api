@@ -1,5 +1,4 @@
 const State = require("../models/state.model");
-const Country = require("../models/country.model");
 
 exports.createState = async (req, res) => {
   try {
@@ -7,15 +6,9 @@ exports.createState = async (req, res) => {
     if (!name || !country)
       return res.status(400).json({ error: "Name and country are required" });
 
-    const countryDoc = await Country.findOne({ name: country }, { _id: 1 });
-    if (!countryDoc)
-      return res.status(409).json({ error: "Country does not exist" });
-
-    const countryId = countryDoc._id;
-
     const exists = await State.findOne({
       name: name.trim(),
-      country: countryId,
+      country,
     });
 
     if (exists)
@@ -23,7 +16,8 @@ exports.createState = async (req, res) => {
         .status(409)
         .json({ error: "State already exists in this country" });
 
-    const newState = new State({ name: name.trim(), country: countryId });
+    const newState = new State({ name: name.trim(), country });
+    await newState.populate("country");
     await newState.save();
 
     res.status(201).json(newState);
@@ -47,7 +41,7 @@ exports.listStates = async (req, res) => {
   res.json({
     total,
     page: parseInt(page),
-    states,
+    data: states,
   });
 };
 
@@ -57,15 +51,9 @@ exports.updateState = async (req, res) => {
 
   const { name, country } = req.body;
 
-  const countryDoc = await Country.findOne({ name: country }, { _id: 1 });
-  if (!countryDoc)
-    return res.status(409).json({ error: "Country does not exist" });
-
-  const countryId = countryDoc._id;
-
   const duplicate = await State.findOne({
     name: name.trim(),
-    country: countryId,
+    country,
     _id: { $ne: id },
   });
   if (duplicate)
@@ -75,9 +63,9 @@ exports.updateState = async (req, res) => {
 
   const updated = await State.findByIdAndUpdate(
     id,
-    { name: name.trim(), country: countryId },
+    { name: name.trim(), country },
     { new: true }
-  );
+  ).populate("country");
 
   if (!updated) return res.status(404).json({ error: "State not found" });
 

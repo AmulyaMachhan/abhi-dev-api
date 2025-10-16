@@ -12,7 +12,7 @@ const useStateStore = create<StateStore>((set) => ({
     try {
       set({ loading: true, error: null });
       const res = await api.get<{ data: State[] }>("/state");
-      set({ states: res.data.data.states });
+      set({ states: res.data.data });
     } catch (err) {
       const error = err as AxiosError<{ message?: string }>;
       set({
@@ -25,8 +25,8 @@ const useStateStore = create<StateStore>((set) => ({
 
   addState: async (data: { name: string; country: string }) => {
     try {
-      const res = await api.post<{ data: State }>("/state", data);
-      set((state) => ({ states: [...state.states, res.data.data] }));
+      const res = await api.post<State>("/state", data);
+      set((state) => ({ states: [...state.states, res.data] }));
     } catch (err) {
       console.error(err);
       throw err;
@@ -35,9 +35,9 @@ const useStateStore = create<StateStore>((set) => ({
 
   updateState: async (id: string, data: { name: string; country: string }) => {
     try {
-      const res = await api.put<{ data: State }>(`/state/${id}`, data);
+      const res = await api.put<State>(`/state/${id}`, data);
       set((state) => ({
-        states: state.states.map((s) => (s._id === id ? res.data.data : s)),
+        states: state.states.map((s) => (s._id === id ? res.data : s)),
       }));
     } catch (err) {
       console.error(err);

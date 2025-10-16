@@ -1,6 +1,9 @@
 export interface State {
   _id: string;
-  country: string;
+  country: {
+    _id: string;
+    name: string;
+  };
   name: string;
 }
 
