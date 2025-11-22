@@ -53,6 +53,22 @@ exports.listDistricts = async (req, res) => {
   });
 };
 
+exports.listDistrictsByStates = async (req, res) => {
+  try {
+    const { state } = req.params;
+    if (!state) return res.status(400).json({ error: "State not found" });
+
+    const districts = await District.find({ state })
+      .populate("state", "name")
+      .populate("country", "name");
+
+    return res.status(200).json(districts);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 exports.updateDistrict = async (req, res) => {
   const { id } = req.params;
   if (!id) {
