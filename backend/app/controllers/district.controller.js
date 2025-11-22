@@ -10,22 +10,10 @@ exports.createDistrict = async (req, res) => {
       .json({ error: "Name, state, and country are required" });
   }
 
-  const countryDoc = await Country.findOne({ name: country }, { _id: 1 });
-  if (!countryDoc)
-    return res.status(409).json({ error: "Country does not exist" });
-
-  const countryId = countryDoc._id;
-
-  const stateDoc = await State.findOne({ name: state }, { _id: 1 });
-  if (!stateDoc)
-    return res.status(409).json({ error: "Country does not exist" });
-
-  const stateId = stateDoc._id;
-
   const exists = await District.findOne({
     name: name.trim(),
-    state: stateId,
-    country: countryId,
+    state,
+    country,
   });
   if (exists) {
     return res
@@ -35,9 +23,11 @@ exports.createDistrict = async (req, res) => {
 
   const newDistrict = new District({
     name: name.trim(),
-    state: stateId,
-    country: countryId,
+    state,
+    country,
   });
+  await newDistrict.populate("country");
+  await newDistrict.populate("state");
   await newDistrict.save();
   res.status(201).json(newDistrict);
 };
@@ -71,22 +61,10 @@ exports.updateDistrict = async (req, res) => {
 
   const { name, state, country } = req.body;
 
-  const countryDoc = await Country.findOne({ name: country }, { _id: 1 });
-  if (!countryDoc)
-    return res.status(409).json({ error: "Country does not exist" });
-
-  const countryId = countryDoc._id;
-
-  const stateDoc = await State.findOne({ name: state }, { _id: 1 });
-  if (!stateDoc)
-    return res.status(409).json({ error: "Country does not exist" });
-
-  const stateId = stateDoc._id;
-
   const duplicate = await District.findOne({
     name: name.trim(),
-    state: stateId,
-    country: countryId,
+    state,
+    country,
     _id: { $ne: id },
   });
 
@@ -99,9 +77,12 @@ exports.updateDistrict = async (req, res) => {
 
   const updated = await District.findByIdAndUpdate(
     id,
-    { name, state: stateId, country: countryId },
+    { name, state, country },
     { new: true }
-  );
+  )
+    .populate("country")
+    .populate("state");
+
   if (!updated) return res.status(404).json({ error: "District not found" });
 
   res.json(updated);

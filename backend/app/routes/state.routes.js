@@ -4,6 +4,7 @@ const state = require("../controllers/state.controller.js");
 
 router.post("/", state.createState);
 router.get("/", state.listStates);
+router.get("/:country", state.listStatesByCountry);
 router.put("/:id", state.updateState);
 router.delete("/:id", state.deleteState);
 

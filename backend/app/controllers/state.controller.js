@@ -45,6 +45,23 @@ exports.listStates = async (req, res) => {
   });
 };
 
+exports.listStatesByCountry = async (req, res) => {
+  try {
+    const { country } = req.params;
+
+    if (!country) {
+      return res.status(400).json({ error: "Country is required" });
+    }
+
+    const states = await State.find({ country }).populate("country", "name");
+
+    return res.status(200).json(states);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
 exports.updateState = async (req, res) => {
   const { id } = req.params;
   if (!id) return res.status(400).json({ error: "Id required" });

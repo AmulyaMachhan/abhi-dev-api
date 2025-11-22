@@ -8,10 +8,10 @@ const useStateStore = create<StateStore>((set) => ({
   loading: false,
   error: null,
 
-  fetchStates: async () => {
+  fetchStates: async (limit?: number) => {
     try {
       set({ loading: true, error: null });
-      const res = await api.get<{ data: State[] }>("/state");
+      const res = await api.get<{ data: State[] }>(`/state?limit=${limit}`);
       set({ states: res.data.data });
     } catch (err) {
       const error = err as AxiosError<{ message?: string }>;
@@ -23,13 +23,21 @@ const useStateStore = create<StateStore>((set) => ({
     }
   },
 
+  fetchStatesByCountry: async (country: string) => {
+    try {
+      const res = await api.get(`/state/${country}`);
+      set({ states: res.data });
+    } catch (error) {
+      console.log(error);
+    }
+  },
+
   addState: async (data: { name: string; country: string }) => {
     try {
       const res = await api.post<State>("/state", data);
       set((state) => ({ states: [...state.states, res.data] }));
     } catch (err) {
       console.error(err);
-      throw err;
     }
   },
 
@@ -41,7 +49,6 @@ const useStateStore = create<StateStore>((set) => ({
       }));
     } catch (err) {
       console.error(err);
-      throw err;
     }
   },
 
@@ -53,7 +60,6 @@ const useStateStore = create<StateStore>((set) => ({
       }));
     } catch (err) {
       console.error(err);
-      throw err;
     }
   },
 }));

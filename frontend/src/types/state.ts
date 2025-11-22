@@ -11,7 +11,8 @@ export interface StateStore {
   states: State[];
   loading: boolean;
   error: string | null;
-  fetchStates: () => Promise<void>;
+  fetchStates: (limit?: number) => Promise<void>;
+  fetchStatesByCountry: (country: string) => Promise<void>;
   addState: (data: { name: string; country: string }) => Promise<void>;
   updateState: (
     id: string,

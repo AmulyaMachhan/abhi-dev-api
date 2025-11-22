@@ -8,11 +8,15 @@ export interface District {
   state: {
     _id: string;
     name: string;
+    country: {
+      _id: string;
+      name: string;
+    };
   };
 }
 
 export interface DistrictStore {
-  states: District[];
+  districts: District[];
   loading: boolean;
   error: string | null;
   fetchDistricts: () => Promise<void>;

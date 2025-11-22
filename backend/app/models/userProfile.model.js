@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const schema = new Schema(
   {
     name: { type: String, required: true },
-    phoneNumber: { type: String, required: true, unique: true },
+    phoneNumber: { type: Number, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     imagePath: { type: String },
   },
