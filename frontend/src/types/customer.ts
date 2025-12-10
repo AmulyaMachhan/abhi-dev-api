@@ -1,8 +1,9 @@
 export interface Customer {
   _id: string;
   name: string;
+  email: string;
   phoneNumber: string;
-  image: string;
+  imagePath: string;
 }
 
 export interface CustomerStore {
@@ -12,16 +13,13 @@ export interface CustomerStore {
 
   getCustomers: () => Promise<void>;
 
-  createCustomer: (data: {
-    name: string;
-    phoneNumber: string;
-    image: string;
-  }) => Promise<void>;
+  createCustomer: (data: FormData) => Promise<void>;
 
   updateCustomer: (
     id: string,
     data: {
       name: string;
+      email: string;
       phoneNumber: string;
       image: string;
     }

@@ -20,6 +20,7 @@ export interface DistrictStore {
   loading: boolean;
   error: string | null;
   fetchDistricts: () => Promise<void>;
+  fetchDistrictsByState: (state: string) => Promise<void>;
   addDistrict: (data: {
     name: string;
     country: string;

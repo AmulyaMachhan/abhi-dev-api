@@ -23,6 +23,21 @@ const useDistrictStore = create<DistrictStore>((set) => ({
     }
   },
 
+  fetchDistrictsByState: async (state) => {
+    try {
+      set({ loading: true, error: null });
+      const res = await api.get(`/district/${state}`);
+      set({ districts: res.data });
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string }>;
+      set({
+        error: error.response?.data?.message || "Failed to fetch countries",
+      });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   addDistrict: async (data: {
     name: string;
     country: string;
